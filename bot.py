@@ -10,6 +10,7 @@ from utils import *
 class Bot(pygame.sprite.Sprite):
   def __init__(self, points, angle, r=200, speed=2, size=30):
     pygame.sprite.Sprite.__init__(self)
+
     image = pygame.Surface((40, 35))
     image.fill((255, 255, 255))
     image.set_colorkey((255, 255, 255))
