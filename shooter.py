@@ -10,8 +10,8 @@ from random import choice, randrange as rnd
 try:
   import android
   android.map_key(android.KEYCODE_BACK, K_ESCAPE)
-  sys.stderr = sys.stdout = open('errors.txt', 'w')
   os.chdir("/storage/sdcard0/pygame/b/")
+  sys.stderr = sys.stdout = open('errors.txt', 'w')
 except:
   android = False
   os.environ['SDL_VIDEO_CENTERED'] = "1"
@@ -200,6 +200,7 @@ else:
   win_w, win_h = 900, 600
   window = pygame.display.set_mode((win_w, win_h))
   control = "joy" if pygame.joystick.get_count() else "key"
+  control = "touch"
 
 
 pygame.display.set_caption("B")
@@ -251,5 +252,5 @@ while runing:
   draw()
   clock.tick(60)
 
-sys.stdout.close()
+#sys.stdout.close()
 pygame.quit()

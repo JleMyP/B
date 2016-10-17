@@ -34,9 +34,10 @@ class Map(object):
    
 
   def update(self):
-    self.player.update()
+    self.player.update2()
     self.bullets.update()
     self.bots.update()
+    
   
 
   def draw(self):
@@ -179,8 +180,9 @@ class Joy(object):
   
 
   def draw(self):
+    window = pygame.display.get_surface()
     window.blit(self.image, self.rect)
-    pygame.draw.circle(window, (255, 0, 0), self.pos, self.r2)
+    pygame.draw.circle(window, (255, 0, 0), (int(self.pos[0]), int(self.pos[1])), self.r2)
 
 
 

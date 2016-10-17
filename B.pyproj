@@ -5,7 +5,7 @@
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{2e378a3e-5444-4f94-908c-9d226e056b1b}</ProjectGuid>
     <ProjectHome />
-    <StartupFile>shooter.py</StartupFile>
+    <StartupFile>main.py</StartupFile>
     <SearchPath />
     <WorkingDirectory>.</WorkingDirectory>
     <OutputPath>.</OutputPath>

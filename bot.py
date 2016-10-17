@@ -23,6 +23,7 @@ class Bot(pygame.sprite.Sprite):
     self.points, self.angle, self.r = points, angle, r
     self.speed, self.size = speed, size
     self.rect.center = points[0]
+    self.dir = None
 
     if len(self.points) == 1:
       self.chaos = [rnd(360), rnd(50, 150), 0, False]
@@ -32,7 +33,7 @@ class Bot(pygame.sprite.Sprite):
       self.set_dir(geom.angle_to_point(self.rect.center, points[1]))
   
 
-  def set_dir(dir):
+  def set_dir(self, dir):
     if self.dir == dir:
       return
 
@@ -41,7 +42,7 @@ class Bot(pygame.sprite.Sprite):
     self.a2 = geom.convert(dir + self.angle / 2)
     self.fx = geom.get_func_a(self.rect.center, dir)
     self.fy = geom.get_func_a(self.rect.center, dir, 2)
-    self.speedx, self.speedy = geom.move(dir, speed)
+    self.speedx, self.speedy = geom.move(dir, self.speed)
     
 
   def move(self):
