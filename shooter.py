@@ -251,5 +251,5 @@ while runing:
   draw()
   clock.tick(60)
 
-sys.stdout.close()
+#sys.stdout.close()
 pygame.quit()
