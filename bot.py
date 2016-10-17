@@ -20,19 +20,29 @@ class Bot(pygame.sprite.Sprite):
     self.rect = self.image.get_rect()
     
     self.activ, self.chaos = False, None
-    self.rect.center = points[0]
     self.points, self.angle, self.r = points, angle, r
     self.speed, self.size = speed, size
+    self.rect.center = points[0]
 
     if len(self.points) == 1:
       self.chaos = [rnd(360), rnd(50, 150), 0, False]
-      self.dir = self.chaos[0]
+      self.set_dir(self.chaos[0])
     else:
       self.next = 1
-      self.dir = geom.angle_to_point(self.rect.center, points[1])
-
-    self.speedx, self.speedy = geom.move(self.dir, speed)
+      self.set_dir(geom.angle_to_point(self.rect.center, points[1]))
   
+
+  def set_dir(dir):
+    if self.dir == dir:
+      return
+
+    self.dir = dir
+    self.a1 = geom.convert(dir - self.angle / 2)
+    self.a2 = geom.convert(dir + self.angle / 2)
+    self.fx = geom.get_func_a(self.rect.center, dir)
+    self.fy = geom.get_func_a(self.rect.center, dir, 2)
+    self.speedx, self.speedy = geom.move(dir, speed)
+    
 
   def move(self):
     lst = self.map.walls.sprites() + self.map.bots.sprites() + [self.player]
@@ -75,8 +85,7 @@ class Bot(pygame.sprite.Sprite):
       if self.next == len(self.points):
         self.next = 0
 
-      self.dir = geom.angle_to_point(self.rect.center, self.points[self.next])
-      self.speedx, self.speedy = geom.move(self.dir, self.speed)
+      self.set_dir(geom.angle_to_point(self.rect.center, self.points[self.next]))
     elif geom.m_vektor(self.rect.center, self.points[self.next]) < self.speed:
       self.speedx = self.points[self.next][0] - self.rect.centerx
       self.speedy = self.points[self.next][0] - self.rect.centery
@@ -85,16 +94,13 @@ class Bot(pygame.sprite.Sprite):
   def calc_path_chaos(self):
     if self.chaos[2] >= self.chaos[1] or self.chaos[3]:
       self.chaos = [rnd(360), rnd(50, 150), 0, False]
-      self.dir = self.chaos[0]
-      self.speedx, self.speedy = geom.move(self.dir, self.speed)
+      self.set_dir(self.chaos[0])
   
 
   def find(self):
     if geom.m_vektor(self.player.rect.center, self.rect.center) > self.r:
       return False
 
-    a1 = geom.convert(self.dir - self.angle / 2)
-    a2 = geom.convert(self.dir + self.angle / 2)
     a = geom.angle_to_point(self.rect.center, self.player.rect.center)
 
     return (self.dir - self.angle / 2 < 0 or self.dir + self.angle / 2 > 360) and (a >= a1 or a <= a2) \
@@ -102,9 +108,6 @@ class Bot(pygame.sprite.Sprite):
 
 
   def find_wall(self):
-    fx = geom.get_func_a(self.rect.center, self.dir)
-    fy = geom.get_func_a(self.rect.center, self.dir, 2)
-
     if not fx:
       interval = min_max(self.rect.centery, self.player.rect.centery)
     else:
@@ -130,8 +133,7 @@ class Bot(pygame.sprite.Sprite):
       self.speed /= 2
 
     if self.activ:
-      self.dir = geom.angle_to_point(self.rect.center, self.player.rect.center)
-      self.speedx, self.speedy = geom.move(self.dir, self.speed)
+      self.set_dir(geom.angle_to_point(self.rect.center, self.player.rect.center))
     else:
       if self.chaos:
         self.calc_path_chaos()

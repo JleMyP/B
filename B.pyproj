@@ -23,7 +23,6 @@
   </PropertyGroup>
   <ItemGroup>
     <Content Include="android.txt" />
-    <Content Include="err.txt" />
     <Content Include="icon.png" />
     <Content Include="план.txt" />
   </ItemGroup>
