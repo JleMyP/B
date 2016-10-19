@@ -10,7 +10,13 @@ from utils import ru
 
 class LocationSettings(object):
   def __init__(self, g):
-    self.g = g
+    self.locations = g["locations"]
+    self.window = g["window"]
+    self.bg = g["locations"]["menu"].bg
+    self.current_settings = g["current_settings"]
+    self.joy = g["joy"]
+    self.joy2 = g["joy2"]
+
     self.new_settings = {}
 
     win_w, win_g = g["win_w"], g["win_h"]
@@ -31,7 +37,7 @@ class LocationSettings(object):
 
 
   def draw(self):
-    self.g["window"].blit(self.g["menu_bg"], (0, 0))
+    self.window.blit(self.bg, (0, 0))
 
     for b in self.buttons:
       if b.visible:
@@ -57,13 +63,13 @@ class LocationSettings(object):
 
 
   def show_menu(self):
-    self.g["locations"]["menu"].show(self)
+    self.locations["menu"].show(self)
 
 
   def show(self, prev):
-    self.g["locations"]["current"] = self
+    self.locations["current"] = self
     self.new_settings.clear()
-    self.new_settings.update(self.g["current_settings"])
+    self.new_settings.update(self.current_settings)
 
     for b in self.buttons:
       b.update(self.__dict__)
@@ -72,24 +78,23 @@ class LocationSettings(object):
       l.update(self.__dict__)
 
 
-  def apply():
-    self.g.joy.change_control(self.new_settings["control"])
-    self.g.joy2.change_control(self.new_settings["control"])
+  def apply(self):
+    self.joy.change_control(self.new_settings["control"])
+    self.joy2.change_control(self.new_settings["control"])
 
-    self.g.current_settings.clear()
-    self.g.current_settings.update(self.new_settings)
+    self.current_settings.clear()
+    self.current_settings.update(self.new_settings)
 
     self.show_menu()
 
 
-  def change_control():
-    if new_settings["control"] == "key":
-      new_settings["control"] = "touch"
-    elif new_settings["control"] == "touch":
-      new_settings["control"] = "joy"
+  def change_control(self):
+    if self.new_settings["control"] == "key":
+      self.new_settings["control"] = "touch"
+    elif self.new_settings["control"] == "touch":
+      self.new_settings["control"] = "joy"
     else:
-      new_settings["control"] = "key"
+      self.new_settings["control"] = "key"
 
-    g = globals()
-    for b in settings_buttons:
-      b.update(g)
+    for b in self.buttons:
+      b.update(self.__dict__)

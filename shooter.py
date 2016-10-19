@@ -85,16 +85,13 @@ btn_img = ramka(None, 200, 50, 10, (0, 255, 0), lw=4, alpha=150)
 menu_btn_img = ramka(None, 50, 50, 10, (0, 255, 0), (0, 0, 0), lw=4, alpha=150)
 
 
+locations = {}
 g = globals()
 
-locations = {
-  "settings": LocationSettings(g),
-  "game": LocationGame(g)
-}
+locations["game"] = LocationGame(g)
+locations["menu"] = LocationMenu(g)
+locations["settings"] = LocationSettings(g)
 
-locations["menu"] = LocationMenu(globals())
-locations["game"].g["locations"] = locations
-locations["settings"].g["locations"] = locations
 locations["menu"].show()
 
 
