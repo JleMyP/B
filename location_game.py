@@ -46,12 +46,12 @@ class LocationGame(object):
 
 
   def replay(self):
-    self.map = self.init_lvl1()
+    self.init_lvl1()
     self.continue_game()
 
 
   def show_menu(self):
-    self.g.locations["menu"].show(self)
+    self.g["locations"]["menu"].show(self)
 
 
   def update(self):
@@ -65,13 +65,42 @@ class LocationGame(object):
       self.map.update()
 
 
+  def draw(self):
+    window = self.g["window"]
+    player = self.g["player"]
+    current_settings = self.g["current_settings"]
+    joy, joy2 = self.g["joy"], self.g["joy2"]
+
+    window.fill((255, 255, 255))
+    
+    if self.map:
+      self.map.draw()
+
+    for b in self.buttons:
+      if b.visible:
+        b.draw()
+
+    for l in self.labels:
+      if l.visible:
+        l.draw()
+
+    window.blit(player.weapon["image"], (20, 60))
+    player.draw_bars()
+
+    if current_settings["control"] == "touch":
+      if joy.visible:
+        joy.draw()
+      if joy2.visible:
+        joy2.draw()
+
+
   def event(self, events):
     current_settings = self.g["current_settings"]
     joy, joy2 = self.g["joy"], self.g["joy2"]
 
     for event in events:
       if event.type == KEYDOWN and event.key == K_ESCAPE:
-        return show_menu()
+        return self.show_menu()
       elif event.type == MOUSEBUTTONDOWN:
         for b in self.buttons:
           if b.visible and b.rect.collidepoint(event.pos):
