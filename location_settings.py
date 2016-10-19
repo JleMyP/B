@@ -1,4 +1,4 @@
-# -*- coding: utf-8 -*-
+п»ї# -*- coding: utf-8 -*-
 
 import pygame
 from pygame.locals import *
@@ -19,19 +19,14 @@ class LocationSettings(object):
     font = g["font"]
 
     self.buttons = [
-      #Button((win_w / 2 + 100, 200, 200, 50), btn_img, font, ru("{new_settings[control]}"), (0,0,0,255), self.change_control),
-      #Button((win_w / 2 - 100, 340, 200, 50), btn_img, font, ru("принять"), (0, 0, 0, 150), self.apply_settings),
-      #Button((win_w / 2 - 100, 400, 200, 50), btn_img, font, ru("отмена"), (0, 0, 0, 150), self.show_menu
-
-      Button((win_w / 2 - 100, 150, 200, 50), btn_img, font, ru("продолжить"), (0, 0, 0, 150), dir, "g['locations']['game'].map"),
-      Button((win_w / 2 - 100, 210, 200, 50), btn_img, font, ru("новая игра"), (0, 0, 0, 150), dir),
-      Button((win_w / 2 - 100, 270, 200, 50), btn_img, font, ru("настройки"), (0, 0, 0, 150), dir),
-      Button((win_w / 2 - 100, 330, 200, 50), btn_img, font, ru("выход"), (0, 0, 0, 150), dir)
+      Button((win_w / 2 + 100, 200, 200, 50), btn_img, font, ru("{new_settings[control]}"), (0,0,0,255), self.change_control),
+      Button((win_w / 2 - 100, 340, 200, 50), btn_img, font, ru("РїСЂРёРЅСЏС‚СЊ"), (0, 0, 0, 150), self.apply),
+      Button((win_w / 2 - 100, 400, 200, 50), btn_img, font, ru("РѕС‚РјРµРЅР°"), (0, 0, 0, 150), self.show_menu)
     ]
 
     self.labels = [
-#      Label((win_w / 2 - 100, 100, 200, 50), font, ru("НАСТРОЙКИ"), (255,255,255,255), (0,0,0,0), centered=True),
-#      Label((win_w / 2 - 300, 200), font, ru("Управление:"), (255,255,255,255), (0,0,0,0))
+      Label((win_w / 2 - 100, 100, 200, 50), font, ru("РќРђРЎРўР РћР™РљР"), (255,255,255,255), (0,0,0,0), centered=True),
+      Label((win_w / 2 - 300, 200), font, ru("РЈРїСЂР°РІР»РµРЅРёРµ:"), (255,255,255,255), (0,0,0,0))
     ]
 
 
