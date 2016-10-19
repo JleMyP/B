@@ -1,5 +1,9 @@
-import cProfile
-#import shooter
+profile = False
 
-cProfile.run("import shooter")
-input()
+if profile:
+  import cProfile
+
+  cProfile.run("import shooter")
+  input("")
+else:
+  import shooter

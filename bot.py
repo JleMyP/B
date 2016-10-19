@@ -104,18 +104,18 @@ class Bot(pygame.sprite.Sprite):
 
     a = geom.angle_to_point(self.rect.center, self.player.rect.center)
 
-    return (self.dir - self.angle / 2 < 0 or self.dir + self.angle / 2 > 360) and (a >= a1 or a <= a2) \
-      or a2 - a1 == self.angle and a1 <= a <= a2
+    return (self.dir - self.angle / 2 < 0 or self.dir + self.angle / 2 > 360) and (a >= self.a1 or a <= self.a2) \
+      or self.a2 - self.a1 == self.angle and self.a1 <= a <= self.a2
 
 
   def find_wall(self):
-    if not fx:
+    if not self.fx:
       interval = min_max(self.rect.centery, self.player.rect.centery)
     else:
       interval = min_max(self.rect.centerx, self.player.rect.centerx)
 
     for w in self.map.walls.sprites():
-      points = w.collide_line(fx, fy, interval)
+      points = w.collide_line(self.fx, self.fy, interval)
 
       if points:
         return w

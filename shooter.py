@@ -12,14 +12,14 @@ try:
   android.map_key(android.KEYCODE_BACK, K_ESCAPE)
   os.chdir("/storage/sdcard0/pygame/b/")
   sys.stderr = sys.stdout = open('errors.txt', 'w')
-except:
+except ImportError:
   android = False
   os.environ['SDL_VIDEO_CENTERED'] = "1"
 
 from player import Player
 from bot import Bot
 from block import Block
-from others import Map, Camera, Joy, Joy2
+from others import Map, Camera, Joy, Joy2, Button, Label
 from utils import ru, min_max, ramka
 
 
@@ -47,11 +47,34 @@ def init_lvl1():
   return camera, map
 
 
-def show_menu():
+def show_menu(back=False):
   global location, menu_bg
   location = locations["menu"]
-  menu_bg = window.copy()
-  menu_bg.blit(shadow, (0, 0))
+
+  if not back:
+    menu_bg = window.copy()
+    menu_bg.blit(shadow, (0, 0))
+
+  g = globals()
+  for b in menu_buttons:
+    b.update(g)
+
+  for l in menu_labels:
+    l.update(g)
+
+
+def show_settings():
+  global location, menu_bg
+  location = locations["settings"]
+  #menu_bg = window.copy()
+  #menu_bg.blit(shadow, (0, 0))
+
+  g = globals()
+  for b in settings_buttons:
+    b.update(g)
+
+  for l in settings_labels:
+    l.update(g)
 
 
 def continue_game():
@@ -60,9 +83,9 @@ def continue_game():
 
 
 def replay():
-  global camera, map, location
+  global camera, map
   camera, map = init_lvl1()
-  location = locations["game"]
+  continue_game()
 
 
 def exit():
@@ -74,7 +97,19 @@ def update_menu():
   pass
 
 
+def update_settings():
+  pass
+
+
 def update_game():
+  g = globals()
+
+  for b in game_buttons:
+    b.update(g)
+
+  for l in game_labels:
+    l.update(g)
+
   map.update()
 
 
@@ -94,9 +129,9 @@ def event_game(events):
       return show_menu()
     elif event.type == MOUSEBUTTONDOWN:
       if control == "touch":
-        for b in buttons:
-          if eval(b[5]) and b[0].collidepoint(event.pos):
-            b[4]()
+        for b in game_buttons:
+          if b.visible and b.rect.collidepoint(event.pos):
+            b.func()
             break
         else:
           if event.pos[0] < win_w / 2 - joy.r1:
@@ -109,21 +144,32 @@ def event_game(events):
           joy.set_center(None)
         elif joy2.visible:
           joy2.set_center(None)
-                    
+  
   joy.calc(events)
   joy2.calc(events)
+
+
+def event_settings(events):
+  for event in events:
+    if event.type == MOUSEBUTTONDOWN:
+      for b in settings_buttons:
+        if b.visible and b.rect.collidepoint(event.pos):
+          b.func()
+          break
+    elif event.type == KEYDOWN:
+      pass
 
 
 def event_menu(events):
   for event in events:
     if event.type == MOUSEBUTTONDOWN:
       for b in menu_buttons:
-        if eval(b[5]) and b[0].collidepoint(event.pos):
-          b[4]()
+        if b.visible and b.rect.collidepoint(event.pos):
+          b.func()
           break
     elif event.type == KEYDOWN:
       pass
-            
+
 
 def draw():
   location[2]()
@@ -132,36 +178,42 @@ def draw():
   pygame.display.update()
 
 
+def draw_menu():
+  window.blit(menu_bg, (0, 0))
+
+  for b in menu_buttons:
+    if b.visible:
+      b.draw()
+
+  for l in menu_labels:
+    if l.visible:
+      l.draw()
+
+
+def draw_settings():
+  window.blit(menu_bg, (0, 0))
+
+  for b in settings_buttons:
+    if b.visible:
+      b.draw()
+
+  for l in settings_labels:
+    if l.visible:
+      l.draw()
+
+
 def draw_game():
   window.fill((255, 255, 255))
   map.draw()
 
   if control == "touch":
-    for b in buttons:
-      if eval(b[5]):
-        window.blit(b[1], b[0])
-        text = font.render(b[2].format(**globals()), True, b[3], (255, 255, 255))
-        text.set_colorkey((255, 255, 255))
-        text.set_alpha(b[3][3])
-        text = text.convert_alpha()
-        trect = text.get_rect()
-        trect.center = b[0].center
-        window.blit(text, trect)
+    for b in game_buttons:
+      if b.visible:
+        b.draw()
 
-  for l in labels:
-    if eval(l[4]):
-      text = font.render(l[3].format(**globals()), True, l[2], (255, 255, 255))
-      text.set_colorkey((255, 255, 255))
-      text.set_alpha(l[2][3])
-      text = text.convert_alpha()
-
-      if l[1]:
-        trect = text.get_rect()
-        trect.center = l[0].center
-      else:
-        trect = l[0].topleft
-
-      window.blit(text, trect)
+  for l in game_labels:
+    if l.visible:
+      l.draw()
 
   window.blit(player.weapon["image"], (20, 60))
   player.draw_bars()
@@ -171,22 +223,6 @@ def draw_game():
       joy.draw()
     if joy2.visible:
       joy2.draw()
-
-
-def draw_menu():
-  window.blit(menu_bg, (0, 0))
-
-  for b in menu_buttons:
-    if eval(b[5]):
-      window.blit(b[1], b[0])
-      text = font.render(b[2].format(**globals()), True, b[3], (255, 255, 255))
-      text.set_colorkey((255, 255, 255))
-      text.set_alpha(b[3][3])
-      text = text.convert_alpha()
-      trect = text.get_rect()
-      trect.center = b[0].center
-      window.blit(text, trect)
-
 
 
 
@@ -200,7 +236,7 @@ else:
   win_w, win_h = 900, 600
   window = pygame.display.set_mode((win_w, win_h))
   control = "joy" if pygame.joystick.get_count() else "key"
-  control = "touch"
+  #control = "touch"
 
 
 pygame.display.set_caption("B")
@@ -221,28 +257,42 @@ btn_img = ramka(None, 200, 50, 10, (0, 255, 0), lw=4, alpha=150)
 menu_btn_img = ramka(None, 50, 50, 10, (0, 255, 0), (0, 0, 0), lw=4, alpha=150)
 
 menu_buttons = [
-  (pygame.Rect((win_w / 2 - 100, 150, 200, 50)), btn_img, ru("продолжить"), (0, 0, 0, 150), continue_game, "camera"),
-  (pygame.Rect((win_w / 2 - 100, 210, 200, 50)), btn_img, ru("новая игра"), (0, 0, 0, 150), replay, "1"),
-  (pygame.Rect((win_w / 2 - 100, 270, 200, 50)), btn_img, ru("выход"), (0, 0, 0, 150), exit, "1")
+  Button((win_w / 2 - 100, 150, 200, 50), btn_img, font, ru("продолжить"), (0, 0, 0, 150), continue_game, "camera"),
+  Button((win_w / 2 - 100, 210, 200, 50), btn_img, font, ru("новая игра"), (0, 0, 0, 150), replay),
+  Button((win_w / 2 - 100, 270, 200, 50), btn_img, font, ru("настройки"), (0, 0, 0, 150), show_settings),
+  Button((win_w / 2 - 100, 330, 200, 50), btn_img, font, ru("выход"), (0, 0, 0, 150), exit)
 ]
 
-buttons = [
-  (pygame.Rect((20, win_h - 70, 200, 50)), btn_img, ru("{player.weapon[name]}"), (0, 0, 0, 150), player.change_weapon, "True"),
-  (pygame.Rect((240, win_h - 70, 200, 50)), btn_img, ru("перезарядка"), (0, 0, 0, 150), player.reload_weapon, "player.weapon['type'] != 2"),
-  (pygame.Rect((win_w - 60, 10, 50, 50)), menu_btn_img, "| |", (0, 0, 0, 150), show_menu, "location != locations['menu']")
+menu_labels = [
+  Label((win_w / 2 - 100, 100, 200, 50), font, ru("МЕНЮ"), (255,255,255,255), (0,0,0,0), centered=True)
 ]
 
-labels = [
-#  (pygame.Rect((20, 70, 200, 40)), False, (0, 0, 0, 150), "{player.weapon[name]}", "True"),
-  (pygame.Rect((20, 110, 200, 40)), False, (0, 0, 0, 150), "clip: {player.weapon[clip]}/{player.weapon[full clip]}", "player.weapon['type'] != 2"),
-  (pygame.Rect((20, 150, 200, 40)), False, (0, 0, 0, 150), "ammo: {player.weapon[ammo]}", "player.weapon['type'] != 2")
+settings_buttons = [
+  Button((win_w / 2 - 100, 330, 200, 50), btn_img, font, ru("назад"), (0, 0, 0, 150), lambda x=0: show_menu(True))
+]
+
+settings_labels = [
+  Label((win_w / 2 - 100, 100, 200, 50), font, ru("НАСТРОЙКИ"), (255,255,255,255), (0,0,0,0), centered=True)
+]
+
+game_buttons = [
+  Button((win_w - 60, 10, 50, 50), menu_btn_img, font, "| |", (0, 0, 0, 150), show_menu),
+  Button((20, win_h - 70, 200, 50), btn_img, font, ru("{player.weapon[name]}"), (0, 0, 0, 150), player.change_weapon),
+  Button((240, win_h - 70, 200, 50), btn_img, font, ru("перезарядка"), (0, 0, 0, 150), player.reload_weapon, "player.weapon['type'] != 2")
+]
+
+game_labels = [
+  Label((20, 110, 200, 40), font, ru("{player.weapon[name]}"), (0, 0, 0, 150)),
+  Label((20, 150, 200, 40), font, "clip: {player.weapon[clip]}/{player.weapon[full clip]}", (0, 0, 0, 150), (255,255,255), "player.weapon['type'] != 2"),
+  Label((20, 190, 200, 40), font, "ammo: {player.weapon[ammo]}", (0, 0, 0, 150), (255,255,255), "player.weapon['type'] != 2")
 ]
 
 locations = {
-    "menu": (event_menu, update_menu, draw_menu),
-    "game": (event_game, update_game, draw_game)
+  "menu": (event_menu, update_menu, draw_menu),
+  "settings": (event_settings, update_settings, draw_settings),
+  "game": (event_game, update_game, draw_game)
 }
-location = locations["menu"]
+show_menu()
 
 
 runing = True

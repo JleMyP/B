@@ -185,7 +185,6 @@ class Joy(object):
     pygame.draw.circle(window, (255, 0, 0), (int(self.pos[0]), int(self.pos[1])), self.r2)
 
 
-
 class Joy2(Joy):
   fire_key_joy = 5
   mouse_state = "up"
@@ -220,3 +219,84 @@ class Joy2(Joy):
         self.player.set_dir(geom.angle_to_point((0, 0), (x, y)))
       if self.joystick.get_button(self.fire_button):
         self.player.fire()
+
+
+
+class Button(object):
+  def __init__(self, rect, image, font, text, text_color, func, expression=None):
+    self.rect = pygame.Rect(rect)
+    self.image_rect = image.get_rect()
+    self.image = image
+    self.font = font
+    self.text = text
+    self.text_color = text_color
+    self.func = func
+    self.expression = expression
+
+    self.visible = False
+    self.rendered_text = None
+    self.rendered_image = None
+
+
+  def update(self, dict):
+    self.visible = not self.expression or eval(self.expression, dict)
+
+    if self.visible:
+      formatted = self.text.format(**dict)
+
+      if (formatted != self.rendered_text):
+        self.rendered_text = formatted
+        self.rendered_image = self.image.copy()
+        
+        text = self.font.render(formatted, True, self.text_color, (255, 255, 255))
+        text.set_colorkey((255, 255, 255))
+        text.set_alpha(self.text_color[3])
+        text = text.convert_alpha()
+        trect = text.get_rect()
+        trect.center = self.image_rect.center
+        self.rendered_image.blit(text, trect)
+
+
+  def draw(self):
+    window = pygame.display.get_surface()
+    window.blit(self.rendered_image, self.rect)
+
+
+
+class Label(object):
+  def __init__(self, rect, font, text, text_color, bg_color=(255,255,255), expression=None, centered=False):
+    self.rect = pygame.Rect(rect)
+    self.font = font
+    self.text = text
+    self.text_color = text_color
+    self.bg_color = bg_color
+    self.expression = expression
+    self.ceneted = centered
+
+    self.visible = False
+    self.rendered_text = None
+    self.rendered_image = None
+    self.rendered_rect = None
+
+
+  def update(self, dict):
+    self.visible = not self.expression or eval(self.expression, dict)
+
+    if self.visible:
+      formatted = self.text.format(**dict)
+
+      if (formatted != self.rendered_text):
+        self.rendered_text = formatted
+        image = self.font.render(formatted, True, self.text_color, self.bg_color)
+        image.set_colorkey(self.bg_color)
+        image.set_alpha(self.text_color[3])
+        self.rendered_image = image.convert_alpha()
+
+        if self.ceneted:
+          self.rendered_rect = image.get_rect()
+          self.rendered_rect.center = self.rect.center
+
+
+  def draw(self):
+    window = pygame.display.get_surface()
+    window.blit(self.rendered_image, self.rendered_rect or self.rect.topleft)

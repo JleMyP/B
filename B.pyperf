@@ -1,0 +1,12 @@
+<?xml version="1.0"?>
+<ProfilingTarget xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <ProjectTarget>
+    <TargetProject>2e378a3e-5444-4f94-908c-9d226e056b1b</TargetProject>
+    <FriendlyName>B</FriendlyName>
+  </ProjectTarget>
+  <Reports>
+    <Report>
+      <Filename>C:\Users\timti\AppData\Local\Temp\B_20161017.vsp</Filename>
+    </Report>
+  </Reports>
+</ProfilingTarget>
