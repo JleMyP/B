@@ -62,7 +62,7 @@ class Map(object):
 
 
 class Camera(object):
-  def __init__(self, center, map_w, map_h, shift=30):
+  def __init__(self, map_w, map_h, center=None, shift=30):
     window = pygame.display.get_surface()
     self.win_w, self.win_h = window.get_size()
 
@@ -78,11 +78,11 @@ class Camera(object):
     self.max_x, self.max_y = map_w + self.shift, map_h + self.shift
 
     if self.win_w >= map_w:
-      self.rect.x = -(win_w - map_w) // 2
+      self.rect.x = -(self.win_w - map_w) // 2
       self.max_x = self.rect.right
 
     if self.win_h >= map_h:
-      self.rect.y = -(win_h - map_h) // 2
+      self.rect.y = -(self.win_h - map_h) // 2
       self.max_y = self.rect.bottom
   
 
@@ -104,18 +104,22 @@ class Camera(object):
 
 
 class Joy(object):
-  def __init__(self, control, player, r1=0, r2=0):
-    self.control = control
+  def __init__(self, control, player, camera, r1=0, r2=0):
     self.player = player
+    self.camera = camera
+    self.visible = False
+    self.r1, self.r2 = r1, r2
+    self.r = r1 - r2 - 10
+
+    self.change_control(control)
+
+  def change_control(self, control):
+    self.control = control
 
     if control == "touch":
-      self.visible = False
-      self.r1, self.r2 = r1, r2
-      self.r = r1 - r2 - 10
-
-      image = pygame.Surface((r1 * 2, r1 * 2))
+      image = pygame.Surface((self.r1 * 2, self.r1 * 2))
       image.fill(0)
-      pygame.draw.circle(image, (0, 255, 0), (r1, r1), r1)
+      pygame.draw.circle(image, (0, 255, 0), (self.r1, self.r1), self.r1)
       image.set_colorkey((0, 0, 0))
       image.set_alpha(100)
       self.image = image.convert_alpha()
@@ -188,7 +192,7 @@ class Joy(object):
 class Joy2(Joy):
   fire_key_joy = 5
   mouse_state = "up"
-    
+  
   def calc(self, events):
     if self.control == "touch" and self.visible:
       self.pos = pos = pygame.mouse.get_pos()
@@ -265,7 +269,7 @@ class Button(object):
 
 class Label(object):
   def __init__(self, rect, font, text, text_color, bg_color=(255,255,255), expression=None, centered=False):
-    self.rect = pygame.Rect(rect)
+    self.rect = pygame.Rect(rect) if len(rect) == 4 else rect;
     self.font = font
     self.text = text
     self.text_color = text_color
@@ -299,4 +303,4 @@ class Label(object):
 
   def draw(self):
     window = pygame.display.get_surface()
-    window.blit(self.rendered_image, self.rendered_rect or self.rect.topleft)
+    window.blit(self.rendered_image, self.rendered_rect or self.rect)
