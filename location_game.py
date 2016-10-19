@@ -1,11 +1,11 @@
 # -*- coding: utf-8 -*-
+
 import pygame
 from pygame.locals import *
 
 from bot import Bot
 from block import Block
 from others import Map, Camera, Joy, Joy2, Button, Label
-from location_menu import LocationMenu
 from utils import ru
 
 
@@ -13,27 +13,30 @@ from utils import ru
 class LocationGame(object):
   def __init__(self, g):
     self.g = g
+    win_w, win_h = g["win_w"], g["win_h"]
     self.camera = Camera(win_w, win_h)
     self.map = None
 
-    win_w, win_g = g.win_w, g.win_h
-    menu_btn_img = g.menu_btn_img
-    font = g.font
-    player = g.player
+    menu_btn_img = g["menu_btn_img"]
+    btn_img = g["btn_img"]
+    font = g["font"]
+    player = g["player"]
+
+    self.g["joy"].camera = self.g["joy2"].camera = self.camera
 
     self.buttons = [
-      Button((win_w - 60, 10, 50, 50), menu_btn_img, font, "| |", (0, 0, 0, 150), self.show_menu, "self.g.current_settings['control'] == 'touch'"),
-      Button((20, win_h - 70, 200, 50), btn_img, font, ru("{player.weapon[name]}"), (0, 0, 0, 150), player.change_weapon,
-        "current_settings['control'] == 'touch'"),
-      Button((240, win_h - 70, 200, 50), btn_img, font, ru("перезарядка"), (0, 0, 0, 150), player.reload_weapon,
-        "current_settings['control'] == 'touch' and player.weapon['type'] != 2")
+#      Button((win_w - 60, 10, 50, 50), menu_btn_img, font, "| |", (0, 0, 0, 150), self.show_menu, "self.g['current_settings']['control'] == 'touch'"),
+#      Button((20, win_h - 70, 200, 50), btn_img, font, ru("{self.g['player'].weapon[name]}"), (0, 0, 0, 150), player.change_weapon,
+#        "self.g['current_settings']['control'] == 'touch'"),
+#      Button((240, win_h - 70, 200, 50), btn_img, font, ru("перезарядка"), (0, 0, 0, 150), player.reload_weapon,
+#        "self.g['current_settings']['control'] == 'touch' and self.g['player'].weapon['type'] != 2")
     ]
 
     self.labels = [
-      Label((20, 110), font, ru("{self.g.player.weapon[name]}"), (0, 0, 0, 150)),
-      Label((20, 150), font, "clip: {self.g.player.weapon[clip]}/{self.g.player.weapon[full clip]}", (0, 0, 0, 150), (255,255,255),
-        "self.g.player.weapon['type'] != 2"),
-      Label((20, 190), font, "ammo: {self.g.player.weapon[ammo]}", (0, 0, 0, 150), (255,255,255), "self.g.player.weapon['type'] != 2")
+#      Label((20, 110), font, ru("{self.g['player'].weapon[name]}"), (0, 0, 0, 150)),
+#      Label((20, 150), font, "clip: {self.g['player'].weapon[clip]}/{self.g['player'].weapon[full clip]}", (0, 0, 0, 150), (255,255,255),
+#        "self.g['player'].weapon['type'] != 2"),
+#      Label((20, 190), font, "ammo: {self.g['player'].weapon[ammo]}", (0, 0, 0, 150), (255,255,255), "self.g['player'].weapon['type'] != 2")
     ]
 
 
@@ -44,6 +47,7 @@ class LocationGame(object):
   def replay(self):
     self.map = self.init_lvl1()
     self.continue_game()
+
 
   def show_menu(self):
     self.g.locations["menu"].show(self)

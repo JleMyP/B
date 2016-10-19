@@ -41,6 +41,9 @@
     <Compile Include="location_menu.py">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="location_settings.py">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="main.py" />
     <Compile Include="others.py">
       <SubType>Code</SubType>

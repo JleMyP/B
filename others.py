@@ -104,9 +104,8 @@ class Camera(object):
 
 
 class Joy(object):
-  def __init__(self, control, player, camera, r1=0, r2=0):
+  def __init__(self, control, player, r1=0, r2=0):
     self.player = player
-    self.camera = camera
     self.visible = False
     self.r1, self.r2 = r1, r2
     self.r = r1 - r2 - 10
