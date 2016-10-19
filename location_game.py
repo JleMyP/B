@@ -6,7 +6,7 @@ from random import choice, randrange as rnd
 
 from bot import Bot
 from block import Block
-from others import Map, Camera, Joy, Joy2, Button, Label
+from others import Map, Camera, Button, Label
 from utils import ru
 
 

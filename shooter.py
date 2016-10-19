@@ -1,20 +1,10 @@
 # -*- coding: utf-8 -*-
 
-import geom
 import sys
 import os
 import pygame
 from pygame.locals import *
 from random import choice, randrange as rnd
-
-try:
-  import android
-  android.map_key(android.KEYCODE_BACK, K_ESCAPE)
-  os.chdir("/storage/sdcard0/pygame/b/")
-  sys.stderr = sys.stdout = open('errors.txt', 'w')
-except ImportError:
-  android = False
-  os.environ['SDL_VIDEO_CENTERED'] = "1"
 
 from player import Player
 from bot import Bot
@@ -26,6 +16,15 @@ from location_settings import LocationSettings
 
 from others import Map, Camera, Joy, Joy2, Button, Label
 from utils import ru, min_max, ramka
+
+try:
+  import android
+  android.map_key(android.KEYCODE_BACK, K_ESCAPE)
+  os.chdir("/storage/sdcard0/pygame/b/")
+  sys.stderr = sys.stdout = open('errors.txt', 'w')
+except ImportError:
+  android = False
+  os.environ['SDL_VIDEO_CENTERED'] = "1"
 
 
 

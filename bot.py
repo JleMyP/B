@@ -1,9 +1,8 @@
-import geom
 import pygame
 from pygame.locals import *
 from random import choice, randrange as rnd
 
-from utils import *
+from utils import geom, min_max
 
 
 
