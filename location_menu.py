@@ -19,6 +19,7 @@ class LocationMenu(object):
     self.bg.blit(g["shadow"], (0, 0))
 
     btn_img = g["btn_img"]
+    btn_img2 = g["btn_img2"]
     font = g["font"]
     exit = g["exit"]
     win_w, win_h = g["win_w"], g["win_h"]
@@ -27,7 +28,7 @@ class LocationMenu(object):
       Button((win_w / 2 - 100, 150, 200, 50), btn_img, font, ru("продолжить"), (0, 0, 0, 150), self.locations["game"].continue_game, "locations['game'].map"),
       Button((win_w / 2 - 100, 210, 200, 50), btn_img, font, ru("новая игра"), (0, 0, 0, 150), self.locations["game"].replay),
       Button((win_w / 2 - 100, 270, 200, 50), btn_img, font, ru("настройки"), (0, 0, 0, 150), self.show_settings),
-      Button((win_w / 2 - 100, 330, 200, 50), btn_img, font, ru("выход"), (0, 0, 0, 150), exit)
+      Button((win_w / 2 - 100, 330, 200, 50), btn_img2, font, ru("выход"), (0, 0, 0, 150), exit)
     ]
 
     self.labels = [

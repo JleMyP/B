@@ -80,7 +80,8 @@ shadow.set_alpha(150)
 menu_bg = window.copy()
 menu_bg.fill((255, 255, 255))
 menu_bg.blit(shadow, (0, 0))
-btn_img = ramka(None, 200, 50, 10, (0, 255, 0), lw=4, alpha=150)
+btn_img2 = ramka(None, 200, 50, 10, (0, 255, 0), lw=4, alpha=150)
+btn_img = pygame.image.load("images/menu_btn.png")
 menu_btn_img = ramka(None, 50, 50, 10, (0, 255, 0), (0, 0, 0), lw=4, alpha=150)
 
 
