@@ -205,6 +205,8 @@ class Joy2(Joy):
 
         self.player.fire()
     elif self.control == "key":
+      prev_state = self.mouse_state
+
       for e in events:
         if e.type == MOUSEBUTTONDOWN:
           self.mouse_state = "down"
@@ -213,7 +215,7 @@ class Joy2(Joy):
 
       self.player.set_dir(geom.angle_to_point(self.player.rect.move(-self.camera.rect.x, -self.camera.rect.y).center, pygame.mouse.get_pos()))
 
-      if pygame.mouse.get_pressed()[0] and self.mouse_state == "down":
+      if self.mouse_state == "down" and (self.player.weapon.get("single shot", False) and prev_state == "up" or not self.player.weapon.get("single shot", False)):
         self.player.fire()
     elif self.control == "joy":
       x, y = int(1000 * self.joystick.get_axis(2)), int(1000 * self.joystick.get_axis(3))

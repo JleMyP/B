@@ -31,16 +31,19 @@ class Player(pygame.sprite.Sprite):
       {
         'type': 1, 'name': ru("пигаль"), 'reload delay set': 30,
         'delay set': 15, 'delay': 0, 'reload delay': 0, 'damag': 5,
-        'clip': 6, 'full clip': 6, 'ammo': 36, 'image': image_pistolet
+        'clip': 6, 'full clip': 6, 'ammo': 36, 'single shot': True,
+        'image': image_pistolet
       },
       {
         'type': 1, 'name': 'mp5', 'reload delay set': 30,
         'delay set': 5, 'delay': 0, 'reload delay': 0, 'damag': 5,
-        'clip': 30, 'full clip': 30, 'ammo': 120, 'image': image_mp5
+        'clip': 30, 'full clip': 30, 'ammo': 120, 'single shot': False,
+        'image': image_mp5
       },
       {
         'type': 2, 'name': ru("меч ыыы"), 'distance': 50, 'delay set': 15,
-        'delay': 0, 'side': 1, 'angle': None, 'n': 0, 'image': image_bita
+        'delay': 0, 'side': 1, 'angle': None, 'n': 0,
+        'image': image_bita
       }
     ]
 
