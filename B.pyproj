@@ -35,6 +35,9 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="geom.py" />
+    <Compile Include="location.py">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="location_game.py">
       <SubType>Code</SubType>
     </Compile>

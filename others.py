@@ -267,15 +267,15 @@ class Button(object):
 
 
 class Label(object):
-  def __init__(self, rect, font, text, text_color, bg_color=(255,255,255), expression=None, centered=False):
+  def __init__(self, rect, font, text, text_color, bg_color=(255,255,255), expression=None):
     self.rect = pygame.Rect(rect) if len(rect) == 4 else rect;
     self.font = font
     self.text = text
     self.text_color = text_color
     self.bg_color = bg_color
     self.expression = expression
-    self.ceneted = centered
 
+    self.ceneted = len(rect) == 4
     self.visible = False
     self.rendered_text = None
     self.rendered_image = None

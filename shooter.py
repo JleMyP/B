@@ -100,7 +100,7 @@ while runing:
   event_callback()
   locations["current"].update()
   draw()
-  clock.tick(60)
+  clock.tick(100)
 
 #sys.stdout.close()
 pygame.quit()
