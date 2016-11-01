@@ -10,6 +10,8 @@ class Block(pygame.sprite.Sprite):
   def __init__(self, points, camera):
     pygame.sprite.Sprite.__init__(self)
 
+    self.window = pygame.display.get_surface()
+
     if isinstance(points, tuple):
       x, y, w, h = points
       points = [(x, y), (x + w, y), (x + w, y + h), (x, y + h)]
@@ -35,8 +37,7 @@ class Block(pygame.sprite.Sprite):
   
 
   def draw(self):
-    window = pygame.display.get_surface()
-    window.blit(self.image, self.rect.move(-self.camera.rect.x, -self.camera.rect.y))
+    self.window.blit(self.image, self.rect.move(-self.camera.rect.x, -self.camera.rect.y))
   
 
   def collide_line_old(self, funcx, funcy, interval=None):

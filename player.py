@@ -13,15 +13,17 @@ class Player(pygame.sprite.Sprite):
   def __init__(self, pos, w, speed):
     pygame.sprite.Sprite.__init__(self)
 
+    self.window = pygame.display.get_surface()
     self.image = pygame.image.load("images/small.png").convert_alpha()
     self.rect = pygame.Rect(pos + (max(self.image.get_size()),)*2)
     self.bar = pygame.Rect((20, 20, 200, 40))
 
-    self.speed, self.dir = speed, 0
+    self.speed = speed
+    self.dir = 0
     self.speedx = self.speedy = 0
     self.hp = self.full_hp = 100
 
-    self.reload_images = [pygame.image.load("images/reload/%i.png"%x).convert_alpha() for x in range(15)]
+    self.reload_images = [pygame.image.load("images/reload/%i.png" % x).convert_alpha() for x in range(15)]
 
     image_pistolet = pygame.image.load("images/1.png").convert_alpha()
     image_mp5 = pygame.image.load("images/5.png").convert_alpha()
@@ -31,13 +33,15 @@ class Player(pygame.sprite.Sprite):
       {
         'type': 1, 'name': ru("пигаль"), 'reload delay set': 30,
         'delay set': 15, 'delay': 0, 'reload delay': 0, 'damag': 5,
-        'clip': 6, 'full clip': 6, 'ammo': 36, 'single shot': True,
+        'clip': 6, 'full clip': 6, 'ammo': 36,
+        'single shot': True, 'through': False,
         'image': image_pistolet
       },
       {
         'type': 1, 'name': 'mp5', 'reload delay set': 30,
         'delay set': 5, 'delay': 0, 'reload delay': 0, 'damag': 5,
-        'clip': 30, 'full clip': 30, 'ammo': 120, 'single shot': False,
+        'clip': 30, 'full clip': 30, 'ammo': 120,
+        'single shot': False, 'through': False,
         'image': image_mp5
       },
       {
@@ -59,19 +63,6 @@ class Player(pygame.sprite.Sprite):
     self.update_image()
 
 
-  def update_image(self):
-    if self.weapon.get("full clip") and self.weapon["reload delay"]:
-      img = self.reload_images[(self.weapon["reload delay"] - 1) / 2]
-    else:
-      img = self.image
-
-    self.img_rot = pygame.transform.rotate(img, self.dir)
-    rect = img.get_rect()
-    rect.center = self.rect.center
-    self.rect = rect
-    self.mask = pygame.mask.from_surface(pygame.transform.rotate(self.img_rot, self.dir))
-
-
   def change_weapon(self):
     if self.weapon.get('angle'):
       return
@@ -80,11 +71,7 @@ class Player(pygame.sprite.Sprite):
       self.weapon['reload delay'] = 0
 
     n = self.weapons.index(self.weapon) + 1
-
-    if n == len(self.weapons):
-      n = 0
-
-    self.weapon = self.weapons[n]
+    self.weapon = self.weapons[n if n != len(self.weapons) else 0]
 
 
   def reload_weapon(self):
@@ -102,10 +89,23 @@ class Player(pygame.sprite.Sprite):
       if self.weapon["clip"]:
         self.weapon['delay'] = self.weapon['delay set']
 
-      self.map.bullets.add(Bulet(self.map, self.camera, self.rect.center, self.dir, 30))
+      self.map.bullets.add(Bulet(self.map, self.camera, self.rect.center, self.dir, self.weapon["through"], 30))
     elif self.weapon.get('angle', 1) is None:
       self.weapon['angle'] = self.dir - 60 * self.weapon['side']
       self.weapon['n'] = 12
+
+
+  def update_image(self):
+    if self.weapon.get("full clip") and self.weapon["reload delay"]:
+      img = self.reload_images[(self.weapon["reload delay"] - 1) / 2]
+    else:
+      img = self.image
+
+    self.img_rot = pygame.transform.rotate(img, self.dir)
+    rect = img.get_rect()
+    rect.center = self.rect.center
+    self.rect = rect
+    self.mask = pygame.mask.from_surface(pygame.transform.rotate(self.img_rot, self.dir))
 
 
   def update_weapons(self):
@@ -119,9 +119,10 @@ class Player(pygame.sprite.Sprite):
       if not self.weapon['reload delay']:
         req = self.weapon["full clip"] - self.weapon["clip"]
         add = req if req <= self.weapon["ammo"] else self.weapon["ammo"]
+
         self.weapon["clip"] += add
         self.weapon["ammo"] -= add
-    elif not (self.weapon.get('angle') is None):
+    elif self.weapon.get('angle') is not None:
       self.weapon['angle'] += self.weapon['side'] * 10
       self.weapon['n'] -= 1
 
@@ -160,6 +161,7 @@ class Player(pygame.sprite.Sprite):
 
     if self.speedx:
       self.rect.move_ip(self.speedx, 0)
+
       for w in sprites:
         if pygame.sprite.collide_rect(self, w):
           if self.speedx < 0:
@@ -169,6 +171,7 @@ class Player(pygame.sprite.Sprite):
 
     if self.speedy:
       self.rect.move_ip(0, self.speedy)
+
       for w in sprites:
         if pygame.sprite.collide_rect(self, w):
           if self.speedy < 0:
@@ -183,11 +186,9 @@ class Player(pygame.sprite.Sprite):
   def update2(self):
     self.update_weapons()
 
-    if not (self.speedx or self.speedy):
-      return
-
     if self.speedx:
       self.rect.move_ip(self.speedx, 0)
+
       for s in self.map.walls.sprites() + self.map.bots.sprites():
         if pygame.sprite.collide_mask(self, s):
           self.rect.move_ip(-self.speedx, 0)
@@ -195,6 +196,7 @@ class Player(pygame.sprite.Sprite):
                   
     if self.speedy:
       self.rect.move_ip(0, self.speedy)
+
       for s in self.map.walls.sprites() + self.map.bots.sprites():
         if pygame.sprite.collide_mask(self, s):
           self.rect.move_ip(0, -self.speedy)
@@ -205,25 +207,23 @@ class Player(pygame.sprite.Sprite):
 
 
   def draw(self):
-    window = pygame.display.get_surface()
     rect = self.rect.move(-self.camera.rect.x, -self.camera.rect.y)
 
-    if self.weapon['type'] == 2 and not (self.weapon['angle'] is None):
+    if self.weapon.get('angle') is not None:
       p = geom.move(self.weapon['angle'], self.weapon['distance'], rect.center)
-      pygame.draw.line(window, (255, 0, 0), rect.center, p, 4)
+      pygame.draw.line(self.window, (255, 0, 0), rect.center, p, 4)
 
-    window.blit(self.img_rot, rect)
+    self.window.blit(self.img_rot, rect)
   
 
   def draw_bars(self):
-    window = pygame.display.get_surface()
-    ramka(window, self.bar.width * self.hp / self.full_hp, self.bar.height, 10, (255, 0, 0), (255, 0, 0), self.bar.topleft)
-    window.blit(ramka(None, self.bar.width, self.bar.height, 10, (0, 0, 0), (0, 0, 255), lw=5), self.bar)
+    ramka(self.window, self.bar.width * self.hp / self.full_hp, self.bar.height, 10, (255, 0, 0), (255, 0, 0), self.bar.topleft)
+    self.window.blit(ramka(None, self.bar.width, self.bar.height, 10, (0, 0, 0), (0, 0, 255), lw=5), self.bar)
     
     if self.weapon.get('reload delay'):
       rect = self.rect.move(-self.camera.rect.x, -self.camera.rect.y)
       pos = rect.centerx - 50, rect.centery - rect.height - 40
+      progress = 100 * (1 - float(self.weapon['reload delay']) / self.weapon['reload delay set'])
 
-      window.blit(ramka(None, 100 * (1 - float(self.weapon['reload delay']) / self.weapon['reload delay set']),
-        self.bar.height, 10, (0, 255, 0), (0, 255, 0), alpha=150), pos)
-      window.blit(ramka(None, 100, self.bar.height, 10, (0, 0, 0), (0, 0, 255), lw=5, alpha=150), pos)
+      self.window.blit(ramka(None, progress, self.bar.height, 10, (0, 255, 0), (0, 255, 0), alpha=150), pos)
+      self.window.blit(ramka(None, 100, self.bar.height, 10, (0, 0, 0), (0, 0, 255), lw=5, alpha=150), pos)

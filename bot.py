@@ -10,6 +10,8 @@ class Bot(pygame.sprite.Sprite):
   def __init__(self, points, angle, r=200, speed=2, size=30):
     pygame.sprite.Sprite.__init__(self)
 
+    self.window = pygame.display.get_surface()
+
     image = pygame.Surface((40, 35))
     image.fill((255, 255, 255))
     image.set_colorkey((255, 255, 255))
@@ -18,10 +20,16 @@ class Bot(pygame.sprite.Sprite):
     self.mask = pygame.mask.from_surface(self.image)
     self.rect = self.image.get_rect()
     
-    self.activ, self.chaos = False, None
-    self.points, self.angle, self.r = points, angle, r
-    self.speed, self.size = speed, size
+    self.points = points
+    self.angle = angle
+    self.speed = speed
+    self.size = size
+    self.r = r
     self.rect.center = points[0]
+
+    self.activ = False
+    self.chaos = None
+    self.angle_to_player = None
     self.dir = None
 
     if len(self.points) == 1:
@@ -45,7 +53,8 @@ class Bot(pygame.sprite.Sprite):
     
 
   def move(self):
-    lst = self.map.walls.sprites() + self.map.bots.sprites() + [self.player]
+    lst = self.map.walls.sprites() + self.map.bots.sprites()
+    lst.append(self.player)
     lst.remove(self)
 
     if self.speedx:
@@ -101,7 +110,7 @@ class Bot(pygame.sprite.Sprite):
     if geom.m_vektor(self.player.rect.center, self.rect.center) > self.r:
       return False
 
-    a = geom.angle_to_point(self.rect.center, self.player.rect.center)
+    self.angle_to_player = a = geom.angle_to_point(self.rect.center, self.player.rect.center)
 
     return (self.dir - self.angle / 2 < 0 or self.dir + self.angle / 2 > 360) and (a >= self.a1 or a <= self.a2) \
       or self.a2 - self.a1 == self.angle and self.a1 <= a <= self.a2
@@ -133,7 +142,11 @@ class Bot(pygame.sprite.Sprite):
       self.speed /= 2
 
     if self.activ:
-      self.set_dir(geom.angle_to_point(self.rect.center, self.player.rect.center))
+      if self.angle_to_player is not None:
+        self.set_dir(self.angle_to_player)
+        self.angle_to_player = None
+      else:
+        self.set_dir(geom.angle_to_point(self.rect.center, self.player.rect.center))
     else:
       if self.chaos:
         self.calc_path_chaos()
@@ -144,20 +157,19 @@ class Bot(pygame.sprite.Sprite):
 
 
   def draw(self):
-    window = pygame.display.get_surface()
     rect = self.rect.move(-self.camera.rect.x, -self.camera.rect.y)
 
     p1 = geom.move(self.dir - self.angle / 2, self.r, rect.center)
     p2 = geom.move(self.dir + self.angle / 2, self.r, rect.center)
-    pygame.draw.line(window, 0, rect.center, p1, 2)
-    pygame.draw.line(window, 0, rect.center, p2, 2)
+    pygame.draw.line(self.window, 0, rect.center, p1, 2)
+    pygame.draw.line(self.window, 0, rect.center, p2, 2)
 
     a1 = geom.radians(self.dir - self.angle / 2)
     a2 = geom.radians(self.dir + self.angle / 2)
     color = (0, 255, 0) if not self.activ else (255, 0, 0)
 
-    pygame.draw.arc(window, color, (rect.centerx - self.r, rect.centery - self.r, self.r * 2, self.r * 2), a1, a2, 5)
-    window.blit(self.image, rect)
+    pygame.draw.arc(self.window, color, (rect.centerx - self.r, rect.centery - self.r, self.r * 2, self.r * 2), a1, a2, 5)
+    self.window.blit(self.image, rect)
 
 
   def collide_line(self, funcx, funcy, interval=None):

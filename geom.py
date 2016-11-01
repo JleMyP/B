@@ -96,15 +96,14 @@ def v_to_func_from_y(v, y):
 
 def move(angle, ln, pos=(0, 0)):
   x, y = ln * sct(angle, 2), -ln * sct(angle)
-  return [x + pos[0], y + pos[1]]
+  return (x + pos[0], y + pos[1])
 
 
 def angle_to_point(pos1, pos2):
   x1, y1 = pos1
   x2, y2 = pos2
   ln = m_vektor(pos1, pos2)
-  sin = abs(y2 - y1) / ln
-  a = asct(sin)
+  a = asct(abs(y2 - y1) / ln)
 
   if y1 < y2 :
     a = -a
@@ -176,7 +175,7 @@ def point_in_lines_f(funcx1, funcy1, funcx2, funcy2, interval=None):
   elif not funcx2:
     y = funcx1(funcy2(0))
 
-    if interval and interval[0] <= y <= interval[1] or not interval:
+    if not interval or interval[0] <= y <= interval[1]:
       return y
     else:
       return None
@@ -203,7 +202,7 @@ def point_in_lines_f(funcx1, funcy1, funcx2, funcy2, interval=None):
 
     x = (b2 - b1) / (a1 - a2)
 
-  if interval and interval[0] <= x <= interval[1] or not interval:
+  if not interval or interval[0] <= x <= interval[1]:
     return x
 
 
@@ -216,7 +215,7 @@ def circle_collide_line(center, r, funcx, funcy, interval=None):
     if x0 - r <= x <= x0 + r:
       d = r ** 2 - (x - x0) ** 2
       if d:
-          return [y for y in (y0 + d, y0 - d) if not interval or interval[0] <= y <= interval[1]]
+        return [y for y in (y0 + d, y0 - d) if not interval or interval[0] <= y <= interval[1]]
       elif not interval or interval[0] <= y0 <= interval[1]:
         return (y0,)
 

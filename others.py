@@ -8,8 +8,10 @@ from pygame.locals import *
 
 class Map(object):
   def __init__(self, name, w, h, camera, player, player_pos=(100, 100), walls=(), bots=(), load=False):
-    self.name, self.filename = name, 'levels/%s.txt' % name
-    self.w, self.h = w, h
+    self.name = name
+    self.filename = 'levels/%s.txt' % name
+    self.w = w
+    self.h = h
     self.camera = camera
     self.player = player
     self.bullets = pygame.sprite.Group()
@@ -75,7 +77,8 @@ class Camera(object):
   
 
   def resize(self, map_w, map_h):
-    self.max_x, self.max_y = map_w + self.shift, map_h + self.shift
+    self.max_x = map_w + self.shift
+    self.max_y = map_h + self.shift
 
     if self.win_w >= map_w:
       self.rect.x = -(self.win_w - map_w) // 2
@@ -107,7 +110,8 @@ class Joy(object):
   def __init__(self, control, player, r1=0, r2=0):
     self.player = player
     self.visible = False
-    self.r1, self.r2 = r1, r2
+    self.r1 = r1
+    self.r2 = r2
     self.r = r1 - r2 - 10
 
     self.change_control(control)
@@ -234,8 +238,8 @@ class Button(object):
     self.image = image
     self.font = font
     self.text = text
-    self.text_color = text_color
     self.func = func
+    self.text_color = text_color
     self.expression = expression
 
     self.visible = False
